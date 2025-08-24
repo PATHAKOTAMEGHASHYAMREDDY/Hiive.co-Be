@@ -18,7 +18,7 @@ import { app, server } from "./lib/socket.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
 app.use(express.json({ limit: "50mb" }));
@@ -32,6 +32,15 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
   })
 );
+
+// Root endpoint
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "Chat App Backend API",
+    status: "running",
+    timestamp: new Date().toISOString(),
+  });
+});
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

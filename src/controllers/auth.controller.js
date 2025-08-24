@@ -6,12 +6,18 @@ import cloudinary from "../lib/cloudinary.js";
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
   try {
+    // Ensure database connection for serverless
+    const { connectDB } = await import("../lib/db.js");
+    await connectDB();
+
     if (!fullName || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     const user = await User.findOne({ email });
@@ -43,7 +49,9 @@ export const signup = async (req, res) => {
     }
   } catch (error) {
     console.error("Signup error:", error);
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
@@ -51,12 +59,18 @@ export const login = async (req, res) => {
   try {
     console.log("=== LOGIN ATTEMPT START ===");
     console.log("Request body:", req.body);
-    
+
+    // Ensure database connection for serverless
+    const { connectDB } = await import("../lib/db.js");
+    await connectDB();
+
     const { email, password } = req.body;
-    
+
     if (!email || !password) {
       console.log("Missing email or password");
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     console.log("Attempting to find user with email:", email);
@@ -69,7 +83,7 @@ export const login = async (req, res) => {
 
     console.log("User found, checking password...");
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    
+
     if (!isPasswordCorrect) {
       console.log("Invalid password for email:", email);
       return res.status(400).json({ message: "Invalid credentials" });
@@ -90,10 +104,10 @@ export const login = async (req, res) => {
     console.error("Error name:", error.name);
     console.error("Error message:", error.message);
     console.error("Error stack:", error.stack);
-    res.status(500).json({ 
-      message: "Internal Server Error", 
+    res.status(500).json({
+      message: "Internal Server Error",
       error: error.message,
-      errorName: error.name 
+      errorName: error.name,
     });
   }
 };
@@ -126,7 +140,9 @@ export const updateProfile = async (req, res) => {
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Update profile error:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 

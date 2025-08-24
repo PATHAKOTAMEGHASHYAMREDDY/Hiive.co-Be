@@ -75,6 +75,9 @@ app.post("/api/test-login", async (req, res) => {
     console.log("Test login endpoint hit");
     console.log("Request body:", req.body);
 
+    // Ensure database connection for serverless
+    await connectDB();
+    
     // Test database connection
     const mongoose = await import("mongoose");
     console.log("Mongoose connection state:", mongoose.connection.readyState);

@@ -56,6 +56,17 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// Debug endpoint to check environment variables (remove after debugging)
+app.get("/api/debug", (req, res) => {
+  res.status(200).json({
+    nodeEnv: process.env.NODE_ENV,
+    hasMongoUri: !!process.env.MONGODB_URI,
+    hasJwtSecret: !!process.env.JWT_SECRET,
+    frontendUrl: process.env.FRONTEND_URL,
+    mongoUriStart: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 20) + "..." : "Not set",
+  });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/rooms", roomRoutes);

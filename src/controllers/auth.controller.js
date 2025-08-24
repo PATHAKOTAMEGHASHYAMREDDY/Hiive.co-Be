@@ -42,7 +42,8 @@ export const signup = async (req, res) => {
       res.status(400).json({ message: "Invalid user data" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Signup error:", error);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
 
@@ -110,7 +111,8 @@ export const updateProfile = async (req, res) => {
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Update profile error:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 

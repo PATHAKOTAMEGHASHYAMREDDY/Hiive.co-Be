@@ -63,8 +63,34 @@ app.get("/api/debug", (req, res) => {
     hasMongoUri: !!process.env.MONGODB_URI,
     hasJwtSecret: !!process.env.JWT_SECRET,
     frontendUrl: process.env.FRONTEND_URL,
-    mongoUriStart: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 20) + "..." : "Not set",
+    mongoUriStart: process.env.MONGODB_URI
+      ? process.env.MONGODB_URI.substring(0, 20) + "..."
+      : "Not set",
   });
+});
+
+// Simple test login endpoint
+app.post("/api/test-login", async (req, res) => {
+  try {
+    console.log("Test login endpoint hit");
+    console.log("Request body:", req.body);
+
+    // Test database connection
+    const mongoose = await import("mongoose");
+    console.log("Mongoose connection state:", mongoose.connection.readyState);
+
+    res.status(200).json({
+      message: "Test login endpoint working",
+      dbState: mongoose.connection.readyState,
+      hasBody: !!req.body,
+    });
+  } catch (error) {
+    console.error("Test login error:", error);
+    res.status(500).json({
+      message: "Test login failed",
+      error: error.message,
+    });
+  }
 });
 
 app.use("/api/auth", authRoutes);

@@ -48,14 +48,18 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
   try {
-    console.log("Login attempt for email:", email);
+    console.log("=== LOGIN ATTEMPT START ===");
+    console.log("Request body:", req.body);
+    
+    const { email, password } = req.body;
     
     if (!email || !password) {
+      console.log("Missing email or password");
       return res.status(400).json({ message: "Email and password are required" });
     }
 
+    console.log("Attempting to find user with email:", email);
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -63,15 +67,18 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    console.log("User found, checking password...");
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    
     if (!isPasswordCorrect) {
       console.log("Invalid password for email:", email);
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    console.log("Login successful for user:", user._id);
+    console.log("Password correct, generating token...");
     generateToken(user._id, res);
 
+    console.log("Login successful for user:", user._id);
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
@@ -79,8 +86,15 @@ export const login = async (req, res) => {
       profilePic: user.profilePic,
     });
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("=== LOGIN ERROR ===");
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    res.status(500).json({ 
+      message: "Internal Server Error", 
+      error: error.message,
+      errorName: error.name 
+    });
   }
 };
 
